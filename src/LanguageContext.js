@@ -83,17 +83,19 @@ export const LanguageProvider = ({ children }) => {
       
       if (ipResult) {
         console.log(`Setting country: ${ipResult.countryCode}, isMultiLingual: ${ipResult.isMultiLingual}`);
+        console.log('Language options received:', ipResult.languageOptions);
         setDetectedCountry(ipResult.countryCode);
         setLanguage(ipResult.languageCode);
         
         // Set language options based on country
-        if (ipResult.isMultiLingual && ipResult.languageOptions) {
+        if (ipResult.isMultiLingual && ipResult.languageOptions && ipResult.languageOptions.length > 0) {
           console.log('Using multi-language options:', ipResult.languageOptions);
           setLanguageOptions(ipResult.languageOptions);
         } else {
-          console.log('Single-language country detected');
+          console.log('Single-language country detected or no language options');
           // For single-language countries (AU, NZ, etc.), only show English
           if (ipResult.languageCode === 'en') {
+            console.log('English-only country');
             setLanguageOptions([
               { code: 'en', name: 'English', flag: '🇬🇧' }
             ]);

@@ -192,7 +192,13 @@ const multiLanguageCountries = {
  * @returns {boolean}
  */
 export function isMultiLanguageCountry(countryCode) {
-  return countryCode && multiLanguageCountries.hasOwnProperty(countryCode);
+  if (!countryCode) {
+    console.warn('isMultiLanguageCountry called with no country code');
+    return false;
+  }
+  const result = multiLanguageCountries.hasOwnProperty(countryCode);
+  console.log(`isMultiLanguageCountry(${countryCode}): ${result}`);
+  return result;
 }
 
 /**
@@ -201,7 +207,16 @@ export function isMultiLanguageCountry(countryCode) {
  * @returns {Array|null} Array of language options or null
  */
 export function getLanguageOptions(countryCode) {
-  return multiLanguageCountries[countryCode] || null;
+  if (!countryCode) {
+    console.warn('getLanguageOptions called with no country code');
+    return null;
+  }
+  const options = multiLanguageCountries[countryCode] || null;
+  console.log(`getLanguageOptions(${countryCode}):`, options);
+  if (options && Array.isArray(options)) {
+    console.log(`  - Found ${options.length} language(s) for ${countryCode}`);
+  }
+  return options;
 }
 
 /**
@@ -224,14 +239,19 @@ export async function detectLanguageFromIP() {
     }
 
     const data = await response.json();
-    console.log('IP API Response:', data);
+    console.log('=== IP API Full Response ===');
+    console.log(JSON.stringify(data, null, 2));
+    console.log('===========================');
     
     const countryCode = data.country_code; // e.g., 'CN', 'FR', 'US'
 
     if (!countryCode) {
-      console.warn('No country code in IP response');
+      console.error('CRITICAL: No country_code in IP response!');
+      console.log('Response keys:', Object.keys(data));
       return null;
     }
+    
+    console.log(`Detected country code: ${countryCode}`);
 
     const isMultiLing = isMultiLanguageCountry(countryCode);
     const langOptions = getLanguageOptions(countryCode);
