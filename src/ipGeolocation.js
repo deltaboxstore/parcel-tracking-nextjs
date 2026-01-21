@@ -219,12 +219,19 @@ export async function detectLanguageFromIP() {
     });
 
     if (!response.ok) {
-      console.warn('IP geolocation service unavailable');
+      console.warn('IP geolocation service unavailable, status:', response.status);
       return null;
     }
 
     const data = await response.json();
+    console.log('IP API Response:', data);
+    
     const countryCode = data.country_code; // e.g., 'CN', 'FR', 'US'
+
+    if (!countryCode) {
+      console.warn('No country code in IP response');
+      return null;
+    }
 
     const result = {
       countryCode: countryCode,
@@ -233,7 +240,7 @@ export async function detectLanguageFromIP() {
       languageOptions: isMultiLanguageCountry(countryCode) ? getLanguageOptions(countryCode) : null
     };
 
-    console.log(`Detected country: ${countryCode}, default language: ${result.languageCode}, multi-lingual: ${result.isMultiLingual}`);
+    console.log(`Detected country: ${countryCode}, default language: ${result.languageCode}, multi-lingual: ${result.isMultiLingual}, options:`, result.languageOptions);
     return result;
   } catch (error) {
     console.error('Error detecting IP location:', error);

@@ -75,18 +75,23 @@ export const LanguageProvider = ({ children }) => {
     const detectInitialLanguage = async () => {
       if (typeof window === 'undefined') return;
       
-      console.log('Showing language selection modal...');
+      console.log('Starting language detection...');
       
       const ipResult = await detectLanguageFromIP();
       
+      console.log('IP Detection Result:', ipResult);
+      
       if (ipResult) {
+        console.log(`Setting country: ${ipResult.countryCode}, isMultiLingual: ${ipResult.isMultiLingual}`);
         setDetectedCountry(ipResult.countryCode);
         setLanguage(ipResult.languageCode);
         
         // Set language options based on country
         if (ipResult.isMultiLingual && ipResult.languageOptions) {
+          console.log('Using multi-language options:', ipResult.languageOptions);
           setLanguageOptions(ipResult.languageOptions);
         } else {
+          console.log('Single-language country detected');
           // For single-language countries (AU, NZ, etc.), only show English
           if (ipResult.languageCode === 'en') {
             setLanguageOptions([
@@ -101,6 +106,7 @@ export const LanguageProvider = ({ children }) => {
           }
         }
       } else {
+        console.warn('IP detection failed, falling back to browser language');
         const browserLang = detectLanguageFromBrowser();
         setLanguage(browserLang);
         // Default to English only if IP detection fails
