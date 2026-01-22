@@ -5342,7 +5342,7 @@ export const translations = {
     usaPostcodeNote: "Para sa USA Postcode, kailangan mong ibigay ang full zip code kung ma-trigger ang error \"No order found matching all fields\". Ang 5 digit postcode ay dapat okay lang, pero para sa most eBay orders at some Etsy orders ay kailangan ng full ZIP code. Para sa countries na walang postcodes, tulad ng Hong Kong & Macau, ilagay ang 999077 (Hong Kong) o 999078 (Macau).",
     epacDeliveryNote: "Pakitandaan na lahat ng ePAC items na ipinadala sa destination ay dapat i-deliver sa mailbox, doorstep, parcel locker o iwanan sa safe place!",
     collectAtPostOffice: "Pero kung ang country mo ay walang mailbox as standard available, kailangan mong kunin ito sa post office.",
-    countriesNoMailbox: "Mga bansang walang available na mailbox/letterbox delivery: Brunei, China, India, Israel, Macau SAR China, Philippines, Poland at Vietnam.",
+    countriesNoMailbox: "Mga bansang walang available na mailbox/letterbox delivery: Brunei, China, India, Israel, Macau SAR China, Pilipinas, Poland at Vietnam.",
     rhythmNexusNotResponsible: "Ang Rhythm Nexus ay HINDI RESPONSIBLE sa pag-handle ng deliveries dahil out of our control at gusto namin na i-track mo na lang ang item status mo.",
     issuesAfterDelivery: "Kung may issues sa delivery mo after 30/45 days (14 days para sa SpeedPost Express) o ang status ay delivered na pero hindi mo natanggap, please contact us",
     cannotUseEmbed: "Hindi namin pwedeng gamitin ang embed para sa tracking kasi most postal service websites ay hindi nag-support nito.",
