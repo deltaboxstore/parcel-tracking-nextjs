@@ -71,49 +71,66 @@ export const LanguageProvider = ({ children }) => {
     const detectInitialLanguage = async () => {
       if (!isMounted) return;
       
-      console.log('Starting language detection...');
+      console.log('=== LANGUAGE DETECTION STARTED ===');
       
       // Check if user has already set their language preference
       const savedLanguage = localStorage.getItem('rhythmNexusLanguage');
       const hasVisitedBefore = localStorage.getItem('rhythmNexusHasVisited');
       
+      console.log('Saved Language:', savedLanguage);
+      console.log('Has Visited Before:', hasVisitedBefore);
+      
       if (savedLanguage && hasVisitedBefore) {
-        console.log('Returning visitor - using saved language:', savedLanguage);
+        console.log('✓ Returning visitor - using saved language:', savedLanguage);
         setLanguage(savedLanguage);
         return; // Skip showing modal for returning visitors
       }
       
-      const ipResult = await detectLanguageFromIP();
+      console.log('✓ First-time visitor or no saved preferences - proceeding with detection');
       
-      console.log('IP Detection Result:', ipResult);
-      
-      if (ipResult) {
-        console.log(`Setting country: ${ipResult.countryCode}, isMultiLingual: ${ipResult.isMultiLingual}`);
-        console.log('Language options received:', ipResult.languageOptions);
+      const ipResult ✓ Country: ${ipResult.countryCode}`);
+        console.log(`✓ Is Multi-Lingual: ${ipResult.isMultiLingual}`);
+        console.log(`✓ Language Code: ${ipResult.languageCode}`);
+        console.log('✓ Language Options:', ipResult.languageOptions);
+        
         setDetectedCountry(ipResult.countryCode);
         setLanguage(ipResult.languageCode);
         
         // Countries to exclude from language selection modal (AU, NZ)
         const excludedCountries = ['AU', 'NZ'];
         
+        const isExcluded = excludedCountries.includes(ipResult.countryCode);
+        console.log(`✓ Is Excluded Country: ${isExcluded}`);
+        
         // Only show modal for multi-language countries (excluding AU and NZ) on first visit
         if (ipResult.isMultiLingual && 
             ipResult.languageOptions && 
             ipResult.languageOptions.length > 0 &&
-            !excludedCountries.includes(ipResult.countryCode) &&
+            !isExcluded &&
             !hasVisitedBefore) {
-          console.log('First-time visitor from multi-language country - showing language modal');
+          console.log('🎉 SHOWING LANGUAGE MODAL - Multi-language country + First visit');
           setLanguageOptions(ipResult.languageOptions);
           setShowLanguageModal(true);
         } else {
-          console.log('Single-language country, excluded country, or returning visitor - no modal shown');
+          console.log('❌ NOT showing modal. Reasons:');
+          console.log('  - Multi-lingual:', ipResult.isMultiLingual);
+          console.log('  - Has options:', ipResult.languageOptions?.length > 0);
+          console.log('  - Not excluded:', !isExcluded);
+          console.log('  - First visit:', !hasVisitedBefore);
           // Mark as visited for single-language countries too
           localStorage.setItem('rhythmNexusHasVisited', 'true');
           setShowLanguageModal(false);
         }
       } else {
-        console.warn('IP detection failed, falling back to browser language');
+        console.warn('❌ IP detection failed, falling back to browser language');
         const browserLang = detectLanguageFromBrowser();
+        setLanguage(browserLang);
+        // Mark as visited even if IP detection fails
+        localStorage.setItem('rhythmNexusHasVisited', 'true');
+        setShowLanguageModal(false);
+      }
+      
+      console.log('=== LANGUAGE DETECTION COMPLETE ==='); const browserLang = detectLanguageFromBrowser();
         setLanguage(browserLang);
         // Mark as visited even if IP detection fails
         localStorage.setItem('rhythmNexusHasVisited', 'true');
