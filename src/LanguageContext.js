@@ -73,20 +73,8 @@ export const LanguageProvider = ({ children }) => {
       
       console.log('=== LANGUAGE DETECTION STARTED ===');
       
-      // Check if user has already set their language preference
-      const savedLanguage = localStorage.getItem('rhythmNexusLanguage');
-      const hasVisitedBefore = localStorage.getItem('rhythmNexusHasVisited');
-      
-      console.log('Saved Language:', savedLanguage);
-      console.log('Has Visited Before:', hasVisitedBefore);
-      
-      if (savedLanguage && hasVisitedBefore) {
-        console.log('✓ Returning visitor - using saved language:', savedLanguage);
-        setLanguage(savedLanguage);
-        return; // Skip showing modal for returning visitors
-      }
-      
-      console.log('✓ First-time visitor or no saved preferences - proceeding with detection');
+      // No localStorage check - always detect and show modal on page load
+      console.log('✓ Starting fresh detection (no persistent storage)');
       
       const ipResult = await detectLanguageFromIP();
       
@@ -101,9 +89,9 @@ export const LanguageProvider = ({ children }) => {
         setDetectedCountry(ipResult.countryCode);
         setLanguage(ipResult.languageCode);
         
-        // Show modal for ALL first-time visitors with a detected country
-        if (ipResult.countryCode && !hasVisitedBefore) {
-          console.log('🎉 SHOWING LANGUAGE MODAL - First visit with detected country');
+        // Show modal for ALL visitors with a detected country who haven't set a language
+        if (ipResult.countryCode) {
+          console.log('🎉 SHOWING LANGUAGE MODAL - Detected country, no saved preference');
           console.log(`   Country: ${ipResult.countryCode}`);
           console.log(`   Available languages: ${ipResult.languageOptions?.length || 0}`);
           
@@ -117,19 +105,13 @@ export const LanguageProvider = ({ children }) => {
           
           setShowLanguageModal(true);
         } else {
-          console.log('❌ NOT showing modal. Reasons:');
-          console.log('  - Has country:', !!ipResult.countryCode);
-          console.log('  - First visit:', !hasVisitedBefore);
-          // Mark as visited
-          localStorage.setItem('rhythmNexusHasVisited', 'true');
+          console.log('❌ NOT showing modal - No country detected');
           setShowLanguageModal(false);
         }
       } else {
         console.warn('❌ IP detection failed, falling back to browser language');
         const browserLang = detectLanguageFromBrowser();
         setLanguage(browserLang);
-        // Mark as visited even if IP detection fails
-        localStorage.setItem('rhythmNexusHasVisited', 'true');
         setShowLanguageModal(false);
       }
       
@@ -139,19 +121,15 @@ export const LanguageProvider = ({ children }) => {
     detectInitialLanguage();
   }, [isMounted]);
 
-  useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem('rhythmNexusLanguage', language);
-    }
-  }, [language, isMounted]);
-
   const handleLanguageSelect = (langCode) => {
     setLanguage(langCode);
+    // No localStorage - language only persists during current session
     setShowLanguageModal(false);
-    // Mark that user has made a choice and visited
-    if (isMounted) {
-      localStorage.setItem('rhythmNexusHasVisited', 'true');
-    }
+  };
+
+  // Simple language change without any storage
+  const changeLanguage = (langCode) => {
+    setLanguage(langCode);
   };
 
   const t = (key) => {
@@ -159,7 +137,7 @@ export const LanguageProvider = ({ children }) => {
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: changeLanguage, t }}>
       {children}
       <LanguageModal
         isOpen={showLanguageModal}

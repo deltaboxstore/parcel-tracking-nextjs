@@ -252,26 +252,61 @@ export async function detectLanguageFromIP() {
   }
 
   try {
-    // Use ip-api.com free service (no API key required, 45 requests/minute)
-    // More reliable than ipapi.co which has Cloudflare protection
-    const response = await fetch('http://ip-api.com/json/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
+    // Use ipapi.co with HTTPS (required for HTTPS websites to avoid mixed content blocking)
+    // Fallback to other services if this fails
+    let response;
+    let data;
+    let detectedCountryCode;
 
-    if (!response.ok) {
-      console.warn('IP geolocation service unavailable, status:', response.status);
-      return null;
+    try {
+      // Primary: ipapi.co (HTTPS, free tier: 1000 requests/day)
+      response = await fetch('https://ipapi.co/json/', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        data = await response.json();
+        detectedCountryCode = data.country_code;
+        console.log('✓ Using ipapi.co');
+      } else {
+        throw new Error('ipapi.co returned ' + response.status);
+      }
+    } catch (primaryError) {
+      console.warn('Primary API (ipapi.co) failed, trying fallback:', primaryError.message);
+      
+      // Fallback: geolocation-db.com (HTTPS, free, no rate limit)
+      try {
+        response = await fetch('https://geolocation-db.com/json/', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Fallback API failed');
+        }
+
+        data = await response.json();
+        detectedCountryCode = data.country_code;
+        console.log('✓ Using geolocation-db.com (fallback)');
+      } catch (fallbackError) {
+        console.error('All geolocation APIs failed');
+        return null;
+      }
     }
 
-    const data = await response.json();
     console.log('=== IP API Full Response ===');
     console.log(JSON.stringify(data, null, 2));
     console.log('===========================');
     
-    const detectedCountryCode = data.countryCode; // e.g., 'CN', 'FR', 'US'
+    // Handle both country_code and countryCode formats
+    if (!detectedCountryCode && data.countryCode) {
+      detectedCountryCode = data.countryCode;
+    }
 
     if (!detectedCountryCode) {
       console.error('CRITICAL: No country_code in IP response!');
@@ -508,28 +543,57 @@ export async function detectLanguageFromIPWithRestrictions() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
-    const response = await fetch('http://ip-api.com/json/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
-      signal: controller.signal,
-    }).catch((err) => {
-      clearTimeout(timeoutId);
-      // Handle fetch failures gracefully
-      console.warn('IP geolocation fetch failed:', err.message);
-      return null;
-    });
+    let response;
+    let data;
+    let detectedCountryCode;
+
+    // Try primary API with HTTPS
+    try {
+      response = await fetch('https://ipapi.co/json/', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        signal: controller.signal,
+      });
+
+      if (response.ok) {
+        data = await response.json();
+        detectedCountryCode = data.country_code;
+      } else {
+        throw new Error('Primary API failed');
+      }
+    } catch (err) {
+      console.warn('Primary API failed, trying fallback:', err.message);
+      
+      // Fallback API
+      response = await fetch('https://geolocation-db.com/json/', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        signal: controller.signal,
+      }).catch((err) => {
+        clearTimeout(timeoutId);
+        console.warn('IP geolocation fetch failed:', err.message);
+        return null;
+      });
+
+      if (!response || !response.ok) {
+        clearTimeout(timeoutId);
+        console.warn('IP geolocation service unavailable');
+        return { error: 'service_unavailable' };
+      }
+
+      data = await response.json();
+      detectedCountryCode = data.country_code || data.countryCode;
+    }
 
     clearTimeout(timeoutId);
 
-    if (!response || !response.ok) {
-      console.warn('IP geolocation service unavailable');
-      return { error: 'service_unavailable' };
+    if (!detectedCountryCode && data.countryCode) {
+      detectedCountryCode = data.countryCode;
     }
-
-    const data = await response.json();
-    const detectedCountryCode = data.countryCode;
 
     // Get browser timezone and languages for enhanced VPN detection
     const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
