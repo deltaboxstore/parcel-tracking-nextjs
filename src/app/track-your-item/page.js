@@ -1145,7 +1145,7 @@ function App() {
                   try {
                     const u = new URL(trackingUrl);
                     const allowed = [
-                      'www.usps.com', 'tools.usps.com', 'www.nzpost.co.nz',
+                      'www.nzpost.co.nz',
                       'jouw.postnl.nl', 'track.bpost.cloud', 'www.dhl.com', 'www.laposte.fr', 'service.post.ch', 'www.postnord.se',
                       'www.post.at', 'www.hongkongpost.hk', 'emonitoring.poczta-polska.pl', 'www.correos.es',
                       'service.epost.go.kr', 'trackings.post.japanpost.jp',
@@ -1155,21 +1155,7 @@ function App() {
                       'postserv.post.gov.tw', 'track.thailandpost.com', 'vnpost.vn', 'www.ems.com.cn',
                       'www.posti.fi', 'www.postaonline.cz'
                     ];
-                    if (destinationCountry === 'US') {
-                      // USPS: use language-specific subdomain (es-tools for Spanish, zh-tools for Chinese, tools for English/default)
-                      const uspsSubdomain = currentLanguage === 'es' ? 'es-tools' : currentLanguage === 'zh' ? 'zh-tools' : 'tools';
-                      const usUrl = `https://${uspsSubdomain}.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`;
-                      return (
-                        <iframe
-                          key={`dest-${trackingNumber}-${destinationCountry}-${currentLanguage}`}
-                          src={`/api/proxy-destination?url=${usUrl}`}
-                          style={{ width: '100%', minHeight: '600px', border: 'none', backgroundColor: 'white' }}
-                          title="USPS Tracking"
-                          sandbox="allow-same-origin allow-popups allow-forms allow-scripts"
-                          onError={(e) => { console.warn('USPS tracking embed failed:', e); }}
-                        />
-                      );
-                    } else if (allowed.includes(u.hostname)) {
+                    if (allowed.includes(u.hostname)) {
                       // Canada Post, Germany, UK: don't append &lang parameter (already in URL path)
                       const proxyUrl = (destinationCountry === 'CA' || destinationCountry === 'DE' || destinationCountry === 'GB')
                         ? `/api/proxy-destination?url=${trackingUrl}`

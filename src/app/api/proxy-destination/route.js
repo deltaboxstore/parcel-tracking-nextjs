@@ -46,31 +46,58 @@ export async function GET(request) {
 
     const baseUrl = `${parsed.protocol}//${parsed.hostname}`;
     const target = parsed.href;
-    // Pin Accept-Language to English to keep base content predictable; Google Translate handles the target language via injection
-    const clientUA = request.headers.get('user-agent') || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0 Safari/537.36';
+    // Use realistic browser headers to avoid bot detection
+    const clientUA = request.headers.get('user-agent') || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+    
+    // Build realistic browser headers
+    const fetchHeaders = {
+      'User-Agent': clientUA,
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Referer': baseUrl,
+      'Upgrade-Insecure-Requests': '1',
+      'Sec-Fetch-Dest': 'document',
+      'Sec-Fetch-Mode': 'navigate',
+      'Sec-Fetch-Site': 'none',
+      'Sec-Fetch-User': '?1',
+      'Cache-Control': 'max-age=0',
+      'DNT': '1',
+      'Connection': 'keep-alive',
+    };
+    
+    // Forward cookies from the client if present
+    const cookieHeader = request.headers.get('cookie');
+    if (cookieHeader) {
+      fetchHeaders['Cookie'] = cookieHeader;
+    }
 
     const resp = await fetch(target, {
-      headers: {
-        'User-Agent': clientUA,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        // Some trackers (incl. USPS) are friendlier with a referer
-        'Referer': baseUrl,
-        'Upgrade-Insecure-Requests': '1',
-      },
+      headers: fetchHeaders,
       cache: 'no-store',
+      redirect: 'follow',
     });
     if (!resp.ok) {
       throw new Error(`Upstream failed: ${resp.status}`);
     }
     const html = await resp.text();
     const content = sanitizeAndRewrite(html, baseUrl, { translateLang: lang });
+    
+    // Build response with realistic headers and forward cookies
+    const responseHeaders = {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'public, s-maxage=180, stale-while-revalidate=600',
+    };
+    
+    // Forward Set-Cookie headers from upstream to maintain sessions
+    const setCookie = resp.headers.get('set-cookie');
+    if (setCookie) {
+      responseHeaders['Set-Cookie'] = setCookie;
+    }
+    
     return new NextResponse(content, {
       status: 200,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'public, s-maxage=180, stale-while-revalidate=600',
-      },
+      headers: responseHeaders,
     });
   } catch (err) {
     return NextResponse.json({ error: 'Proxy failed', message: err.message }, { status: 500 });

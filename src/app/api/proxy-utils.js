@@ -2,6 +2,9 @@ import * as cheerio from 'cheerio';
 
 export function sanitizeAndRewrite(html, baseUrl, options = {}) {
   const $ = cheerio.load(html, { decodeEntities: false });
+  
+  const hostname = new URL(baseUrl).hostname.toLowerCase();
+  const isUSPS = hostname.includes('usps.com');
 
   // Remove meta-based CSP or frame options that can block resources when proxied
   $('meta[http-equiv="Content-Security-Policy"]').remove();
@@ -24,11 +27,63 @@ export function sanitizeAndRewrite(html, baseUrl, options = {}) {
       $s.remove();
       return;
     }
-    // Strip simple frame-busting inline scripts
-    const code = $s.html() || '';
-    if (!src && /window\.top|top\s*\.|parent\.location|top\.location|document\.domain/.test(code)) {
+    
+    // For USPS, be more aggressive with script removal
+    if (isUSPS && src && (
+      src.includes('tracking') ||
+      src.includes('frame') ||
+      src.includes('bust')
+    )) {
+      console.log('[Proxy] USPS: Removed suspicious script:', src);
       $s.remove();
       return;
+    }
+    
+    // Remove obfuscated external scripts (anti-bot protection)
+    // Pattern: /QkNnsuKwh/6iHOr16d/w/h9OhmNX2ib2X0Nf3/MhN8fVdRQQY/Ujc-ND1/1Sw0C
+    if (src && (
+      /\/[A-Za-z0-9]{8,}\/[A-Za-z0-9]{8,}\//.test(src) || // Multiple random segments
+      /\/[A-Za-z0-9_-]{40,}$/.test(src) // Long random string at end
+    )) {
+      console.log('[Proxy] Removed obfuscated anti-bot script:', src);
+      $s.remove();
+      return;
+    }
+    
+    // Strip frame-busting and reload scripts more aggressively
+    const code = $s.html() || '';
+    if (!src && code) {
+      // Check for various frame-busting patterns
+      if (
+        /window\.top|top\s*\.|parent\.location|top\.location|document\.domain/.test(code) ||
+        /self\s*!==\s*top|top\s*!==\s*self/.test(code) ||
+        /window\.location\.replace|window\.location\.href\s*=/.test(code) ||
+        /location\.reload|window\.location\.reload/.test(code) ||
+        /frameElement/.test(code) ||
+        /if\s*\(\s*top/.test(code) ||
+        /top\.location\s*=/.test(code) ||
+        // USPS anti-bot script that does XHR + document.write
+        /ISTL-INFINITE-LOOP|ISTL-REDIRECT-TO/.test(code) ||
+        /afterReadyCb|document\.write\(responseText\)/.test(code) ||
+        /xhr\.open\("get",\s*location\.href/.test(code)
+      ) {
+        console.log('[Proxy] Removed frame-busting/anti-bot script:', code.substring(0, 150));
+        $s.remove();
+        return;
+      }
+      
+      // For USPS, also check for any inline scripts that might reload
+      if (isUSPS && (
+        code.includes('reload') ||
+        code.includes('redirect') ||
+        /location\s*=/.test(code) ||
+        code.includes('document.write') ||
+        code.includes('document.open')
+      )) {
+        console.log('[Proxy] USPS: Removed suspicious inline script:', code.substring(0, 100));
+        $s.remove();
+        return;
+      }
     }
     if ($s.attr('src') && $s.attr('src').startsWith('/')) {
       // USPS uses shared assets under www.usps.com even when the HTML is from tools.usps.com
@@ -86,9 +141,14 @@ header.sticky, .cookie-banner, .cookie-consent, .consent-banner { position: stat
     switch (host) {
       case 'tools.usps.com':
       case 'www.usps.com':
+      case 'es-tools.usps.com':
+      case 'zh-tools.usps.com':
         hostCss = `
-.usps-header, .usps-footer, .global-navigation, .usps-gateway { display: none !important; }
-#tracking, #tracking-results, .article { visibility: visible !important; }
+.nav-utility, .global--navigation, #g-navigation, .global-footer--wrap, #global-footer--wrap, .global-footer { display: none !important; }
+.g-alert, .alert-bar { display: none !important; }
+.container-fluid.full-subheader { margin-top: 0 !important; padding-top: 20px !important; }
+#tracking_page_wrapper { padding-top: 0 !important; }
+body { background: #fff !important; }
 `;
         break;
       case 'www.royalmail.com':
