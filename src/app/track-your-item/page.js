@@ -1160,7 +1160,7 @@ function App() {
                       return (
                         <iframe
                           key={`dest-${trackingNumber}-${destinationCountry}-${currentLanguage}`}
-                          src={`/api/proxy-destination?url=${encodeURIComponent(usUrl)}&lang=${currentLanguage}`}
+                          src={`/api/proxy-destination?url=${usUrl}&lang=${currentLanguage}`}
                           style={{ width: '100%', minHeight: '600px', border: 'none', backgroundColor: 'white' }}
                           title="USPS Tracking"
                           sandbox="allow-same-origin allow-popups allow-forms allow-scripts"
