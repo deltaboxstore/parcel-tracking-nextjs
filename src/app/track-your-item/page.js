@@ -1156,11 +1156,13 @@ function App() {
                       'www.posti.fi', 'www.postaonline.cz'
                     ];
                     if (destinationCountry === 'US') {
-                      const usUrl = `https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`;
+                      // USPS: use language-specific subdomain (es-tools for Spanish, zh-tools for Chinese, tools for English/default)
+                      const uspsSubdomain = currentLanguage === 'es' ? 'es-tools' : currentLanguage === 'zh' ? 'zh-tools' : 'tools';
+                      const usUrl = `https://${uspsSubdomain}.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`;
                       return (
                         <iframe
                           key={`dest-${trackingNumber}-${destinationCountry}-${currentLanguage}`}
-                          src={`/api/proxy-destination?url=${usUrl}&lang=${currentLanguage}`}
+                          src={`/api/proxy-destination?url=${usUrl}`}
                           style={{ width: '100%', minHeight: '600px', border: 'none', backgroundColor: 'white' }}
                           title="USPS Tracking"
                           sandbox="allow-same-origin allow-popups allow-forms allow-scripts"
