@@ -5297,7 +5297,7 @@ export const translations = {
   
   tl: {
     home: "Home", blog: "Blog", aboutUs: "Tungkol sa Amin", faq: "FAQ", contact: "Contact", trackPackage: "Track Package",
-    parcelTracking: "Parcel Tracking", serviceAnnouncement: "Patalastas ng Serbisyo", trackingNumber: "Tracking Number", destinationCountry: "Destination Country", postcode: "Postcode",
+    parcelTracking: "Parcel Tracking", usaStormAdvisory: "May matinding winter storm na tumatama sa ilang parts ng USA. Maaapektuhan nito ang both postal at express delivery ng packages papasok sa USA.", serviceAnnouncement: "Patalastas ng Serbisyo", trackingNumber: "Tracking Number", destinationCountry: "Destination Country", postcode: "Postcode",
     orderNumber: "Order Number (Halimbawa: DLTB1234567890)", fromDate: "From Date (REQUIRED)", toDate: "To Date (REQUIRED)",
     trackParcel: "Track Parcel", selectCourier: "-- Pumili ng Courier / Bansa --", singaporeCouriers: "Singapore Couriers",
     optionSingPost: "🇸🇬 Singapore Post (SingPost)",
