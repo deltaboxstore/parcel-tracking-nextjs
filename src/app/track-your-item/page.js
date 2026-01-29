@@ -179,14 +179,42 @@ const postalTrackingUrls = {
   FI: 'https://www.posti.fi/fi/seuranta#/lahetys/',
   FR: 'https://www.laposte.fr/outils/track-a-parcel?code=',
   DE: 'https://www.dhl.com/{lang}/home/{path}.html?tracking-id=',
-  HK: 'https://www.hongkongpost.hk/en/mail_tracking/index.html?trackcode=',
+  // Hong Kong: language-specific tracking links
+  HK: {
+    en: 'https://webapp.hongkongpost.hk/en/mail_tracking/index.html?trackcode=',
+    zh: 'https://webapp.hongkongpost.hk/tc/mail_tracking/index.html?trackcode=', // Traditional Chinese
+    zh_hk: 'https://webapp.hongkongpost.hk/tc/mail_tracking/index.html?trackcode=', // Alias for Traditional Chinese
+    zh_cn: 'https://webapp.hongkongpost.hk/sc/mail_tracking/index.html?trackcode=', // Simplified Chinese
+  },
   IN: 'https://www.indiapost.gov.in/track-result/article-number/',
-  ID: 'https://www.posindonesia.co.id/id/tracking?key=',
-  IE: 'https://www.anpost.com/',
-  IL: 'https://israelpost.co.il/en/itemtrace?lang=EN&itemcode=',
+  // Indonesia: language-specific tracking links
+  ID: {
+    id: 'https://www.posindonesia.co.id/id/tracking/',
+    en: 'https://www.posindonesia.co.id/en/tracking/',
+  },
+  // Ireland: language-specific tracking links (no embed, fallback only)
+  IE: {
+    en: 'https://www.anpost.com/',
+    ga: 'https://www.anpost.com/ga-IE',
+  },
+  // Israel: language-specific tracking links (no embed, fallback only)
+  IL: {
+    he: 'https://israelpost.co.il/#?itemcode=', // Hebrew
+    en: 'https://israelpost.co.il/en/itemtrace?lang=EN&itemcode=', // English
+  },
   IT: 'https://www.poste.it/cerca/index.html#/risultati-spedizioni/',
-  JP: 'https://trackings.post.japanpost.jp/services/srv/search/?requestNo1=',
-  MO: 'https://www.ctt.gov.mo/macaupost/contents/MailTrack.aspx/',
+  JP: {
+    en: 'https://trackings.post.japanpost.jp/services/srv/search/?requestNo1=',
+    ja: 'https://trackings.post.japanpost.jp/services/srv/sequenceNoSearch?requestNo=&count=100&sequenceNoSearch.x=57&sequenceNoSearch.y=15&locale=ja',
+  },
+  // Macau: language-specific tracking links
+  MO: {
+    en: 'https://www.ctt.gov.mo/MacauPost/Contents/MailTrack.aspx?lang=en',
+    zh: 'https://www.ctt.gov.mo/MacauPost/Contents/MailTrack.aspx?lang=zh', // Traditional Chinese
+    zh_hk: 'https://www.ctt.gov.mo/MacauPost/Contents/MailTrack.aspx?lang=zh', // Alias for Traditional Chinese
+    zh_cn: 'https://www.ctt.gov.mo/MacauPost/Contents/MailTrack.aspx?lang=zh_cn', // Simplified Chinese (if available, else fallback to zh)
+    pt: 'https://www.ctt.gov.mo/MacauPost/Contents/MailTrack.aspx?lang=pt',
+  },
   MY: 'http://www.pos.com.my/postaltrack.aspx?code=',
   NO: 'https://sporing.posten.no/sporing/',
   NL: 'https://jouw.postnl.nl/track-and-trace/',
@@ -194,7 +222,7 @@ const postalTrackingUrls = {
   PH: 'https://tracking.phlpost.gov.ph/?trackcode=',
   PL: 'https://emonitoring.poczta-polska.pl/?numer=',
   PT: 'https://appserver.ctt.pt/CustomerArea/PublicArea_Detail?ObjectCodeInput=',
-  KR: 'https://service.epost.go.kr/iservice/usr/trace/usrtrc001k01.jsp?sid1=',
+  KR: 'https://service.epost.go.kr/trace.RetrieveEmsRigiTraceList.comm?POST_CODE=',
   ES: 'https://www.correos.es/es/es/herramientas/localizador/envios/detalle?tracking-number=',
   SE: 'https://www.postnord.se/en/our-tools/track-and-trace?shipmentId=',
   CH: 'https://service.post.ch/ekp-web/ui/entry/search/',
@@ -399,6 +427,7 @@ const postalOperatorNames = {
   FR: "La Poste",
   CH: "Swiss Post",
   SE: "PostNord",
+  FI: "Posti",
   NL: "PostNL",
   BE: "bpost",
   AT: "Österreichische Post",
@@ -678,9 +707,12 @@ function App() {
 
     const matchedOrder = results.find(
       (order) =>
+        order.trackingNumber && trackingNumber &&
         order.trackingNumber.toUpperCase() === trackingNumber.toUpperCase() &&
         order.destinationCountry === destinationCountry &&
+        order.orderNumber && orderNumber &&
         order.orderNumber.toUpperCase() === orderNumber.toUpperCase() &&
+        order.postcode && postcode &&
         order.postcode.toUpperCase() === postcode.toUpperCase()
     );
 
@@ -724,8 +756,77 @@ function App() {
       if (/^PX\d{9}SG$/.test(trackingNumber)) {
         url = postalTrackingUrls.PX + trackingNumber;
       } else if (/^(LG|LP|LT)\d{9}SG$/.test(trackingNumber)) {
-        // Don't encode alphanumeric tracking numbers to avoid unnecessary % in URLs
-        url = postalTrackingUrls[destinationCountry] + trackingNumber;
+        // Austria: use language-specific tracking URL
+        if (destinationCountry === 'AT') {
+          if (currentLanguage === 'en') {
+            url = `https://www.post.at/en/s/track-and-trace-search?snr=${trackingNumber}`;
+          } else {
+            url = `https://www.post.at/s/sendungssuche?snr=${trackingNumber}`;
+          }
+        } else if (destinationCountry === 'CZ') {
+          // Czechia: use language-specific tracking URL
+          if (currentLanguage === 'en') {
+            url = `https://www.postaonline.cz/en/trackandtrace/-/zasilka/cislo?parcelNumbers=${trackingNumber}`;
+          } else {
+            url = `https://www.postaonline.cz/trackandtrace-/zasilka/cislo?parcelNumbers=${trackingNumber}`;
+          }
+        } else if (destinationCountry === 'FI') {
+          // Finland: use language-specific fallback link, never embed
+          if (currentLanguage === 'fi') {
+            url = `https://www.posti.fi/seuranta/${trackingNumber}`;
+          } else if (currentLanguage === 'sv') {
+            url = `https://www.posti.fi/sv/uppfoljning/${trackingNumber}`;
+          } else {
+            url = `https://www.posti.fi/en/tracking/${trackingNumber}`;
+          }
+        } else if (destinationCountry === 'JP') {
+            // Use language-specific Japan Post URL and append tracking number correctly
+            const normalizedLang = (currentLanguage || '').split('-')[0];
+            if (normalizedLang === 'ja') {
+              // Japanese: https://trackings.post.japanpost.jp/services/srv/sequenceNoSearch?requestNo=LT123456789SG&count=100&sequenceNoSearch.x=54&sequenceNoSearch.y=12&locale=ja
+              url = `https://trackings.post.japanpost.jp/services/srv/sequenceNoSearch?requestNo=${encodeURIComponent(trackingNumber)}&count=100&sequenceNoSearch.x=54&sequenceNoSearch.y=12&locale=ja`;
+            } else {
+              // English: https://trackings.post.japanpost.jp/services/srv/search/direct?reqCodeNo1=LT123456789SG&searchKind=S002&locale=en
+              url = `https://trackings.post.japanpost.jp/services/srv/search/direct?reqCodeNo1=${encodeURIComponent(trackingNumber)}&searchKind=S002&locale=en`;
+            }
+        } else {
+          // Special handling for Hong Kong, Macau, Indonesia, and Ireland: choose language-specific link
+          if (["HK", "MO", "ID", "IE", "IL"].includes(destinationCountry)) {
+            let langKey;
+            if (destinationCountry === "ID") {
+              langKey = currentLanguage === "id" ? "id" : "en";
+            } else if (destinationCountry === "MO") {
+              langKey =
+                currentLanguage === "zh" || currentLanguage === "zh-hk" ? "zh" :
+                currentLanguage === "zh-cn" ? "zh_cn" :
+                currentLanguage === "pt" ? "pt" :
+                "en";
+            } else if (destinationCountry === "HK") {
+              langKey =
+                currentLanguage === "zh" || currentLanguage === "zh-hk" ? "zh" :
+                currentLanguage === "zh-cn" ? "zh_cn" :
+                "en";
+            } else if (destinationCountry === "IE") {
+              langKey = currentLanguage === "ga" ? "ga" : "en";
+            } else if (destinationCountry === "IL") {
+              langKey = currentLanguage === "he" ? "he" : "en";
+            }
+            const countryLinks = postalTrackingUrls[destinationCountry];
+            // Israel: always append tracking number for both languages
+            if (destinationCountry === "IL") {
+              url = (countryLinks[langKey] || countryLinks.en) + trackingNumber;
+              setTrackingUrl(url);
+            } else if (destinationCountry === "IE") {
+              url = (countryLinks[langKey] || countryLinks.en);
+              setTrackingUrl(url);
+            } else {
+              url = (countryLinks[langKey] || countryLinks.en) + trackingNumber;
+            }
+          } else {
+            // Don't encode alphanumeric tracking numbers to avoid unnecessary % in URLs
+            url = postalTrackingUrls[destinationCountry] + trackingNumber;
+          }
+        }
         // Canada Post: replace {lang} with current language (en or fr)
         if (destinationCountry === 'CA') {
           const canadaLang = currentLanguage === 'fr' ? 'fr' : 'en';
@@ -753,16 +854,30 @@ function App() {
     }
 
     if (["NL", "BE"].includes(destinationCountry)) {
-      if (!postcode) {
-        console.warn("Postcode is required.");
-        alert(t('postcodeRequired'));
-        return;
-      }
       if (destinationCountry === "NL") {
-          url = `https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(trackingNumber)}-NL-${encodeURIComponent(postcode)}`;
+        if (!postcode) {
+          console.warn("Postcode is required.");
+          alert(t('postcodeRequired'));
+          return;
+        }
+        url = `https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(trackingNumber)}-NL-${encodeURIComponent(postcode)}`;
       }
       if (destinationCountry === "BE") {
-        url = `https://track.bpost.cloud/btr/web/#/search?lang=fr&itemCode=${encodeURIComponent(trackingNumber)}&postalCode=${encodeURIComponent(postcode)}`;
+        if (!postcode) {
+          console.warn("Postcode is required.");
+          alert(t('postcodeRequired'));
+          return;
+        }
+        // Map app language to bpost supported languages
+        let bpostLang = 'fr';
+        if (currentLanguage === 'en') bpostLang = 'en';
+        else if (currentLanguage === 'de') bpostLang = 'de';
+        else if (currentLanguage === 'nl') bpostLang = 'nl';
+        url = `https://track.bpost.cloud/btr/web/#/home?lang=${bpostLang}&itemCode=${encodeURIComponent(trackingNumber)}&postalCode=${encodeURIComponent(postcode)}`;
+      }
+      if (destinationCountry === "BN") {
+        url = "https://bn.postglobal.online/vpo/tracking";
+        // No autofill, user must paste tracking number manually
       }
     }
 
@@ -1090,7 +1205,7 @@ function App() {
           </div>
 
           {/* Embedded tracker: mount a single iframe to avoid repeated loads */}
-          <div className="tracking-embed" style={{ marginTop: '20px' }}>
+          <div className="tracking-embed" style={{ marginTop: '20px', overflowX: 'auto' }}>
             {/^\d{10}$/.test(trackingNumber) && (
               <iframe
                 key={`dhl-${trackingNumber}-${currentLanguage}`}
@@ -1142,21 +1257,42 @@ function App() {
                 )}
 
                 {activeEmbed === 'dest' && (() => {
+                  // Ireland: always fallback, never embed
+                  if (destinationCountry === 'IE') {
+                    // Always use the homepage link, never with tracking number
+                    const countryLinks = postalTrackingUrls['IE'];
+                    const homepage = currentLanguage === 'ga' ? countryLinks.ga : countryLinks.en;
+                    return (
+                      <div style={{ padding: 12, background: '#fff3cd', border: '1px solid #ffeeba', borderRadius: 6 }}>
+                        {t('anPostNoDirectTracking') /* e.g. 'An Post (Ireland) does not support direct tracking links or embedded tracking.' */}<br />
+                        <strong>{t('anPostPasteManually') /* e.g. 'Please paste your tracking number manually on the An Post website.' */}</strong><br />
+                        <a href={homepage} target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc', fontWeight: 'bold' }}>
+                          {t('goToAnPost') /* e.g. 'Go to An Post' */}
+                        </a>
+                      </div>
+                    );
+                  }
                   try {
                     const u = new URL(trackingUrl);
+                    // All carriers use iframe embed (reenabled for USPS, Australia Post, Canada Post, Royal Mail)
+                    // Fallback to iframe for other allowed carriers
                     const allowed = [
-                      'www.nzpost.co.nz',
-                      'jouw.postnl.nl', 'track.bpost.cloud', 'www.dhl.com', 'www.laposte.fr', 'service.post.ch', 'www.postnord.se',
-                      'www.post.at', 'www.hongkongpost.hk', 'emonitoring.poczta-polska.pl', 'www.correos.es',
+                      // 'www.usps.com', 'tools.usps.com', 'es-tools.usps.com', 'zh-tools.usps.com',
+                      // 'www.canadapost-postescanada.ca',
+                      // 'auspost.com.au',
+                      // 'www.royalmail.com',
+                      // 'www.nzpost.co.nz', 
+                      /*'jouw.postnl.nl',*/ /*'track.bpost.cloud',*/ 'www.dhl.com', /*'www.laposte.fr',*/ /*'www.postnord.se',*/
+                      // 'www.post.at',
+                      /*'www.hongkongpost.hk',*/ 'emonitoring.poczta-polska.pl',  /*'www.correos.es',*/
                       'service.epost.go.kr', 'trackings.post.japanpost.jp',
                       // Additional destinations requested
-                      'bn.postglobal.online', 'www.posindonesia.co.id', 'www.anpost.com', 'israelpost.co.il',
-                      'www.ctt.gov.mo', 'www.pos.com.my', 'sporing.posten.no', 'tracking.phlpost.gov.ph',
-                      'postserv.post.gov.tw', 'track.thailandpost.com', 'vnpost.vn', 'www.ems.com.cn',
-                      'www.posti.fi', 'www.postaonline.cz'
+                      /*'bn.postglobal.online',*/ 'www.posindonesia.co.id', /*'israelpost.co.il',*/, /*'www.poste.it',*/
+                      /*'www.ctt.gov.mo',*/ /*'www.pos.com.my'*/, /*'sporing.posten.no',*/ /*'tracking.phlpost.gov.ph',*/
+                    /*'postserv.post.gov.tw',*/ /*'track.thailandpost.com',*/ /*'vnpost.vn',*/ /*'www.ems.com.cn',*/
+                      /*'www.posti.fi'*/, 'www.postaonline.cz', 
                     ];
                     if (allowed.includes(u.hostname)) {
-                      // Canada Post, Germany, UK: don't append &lang parameter (already in URL path)
                       const proxyUrl = (destinationCountry === 'CA' || destinationCountry === 'DE' || destinationCountry === 'GB')
                         ? `/api/proxy-destination?url=${trackingUrl}`
                         : `/api/proxy-destination?url=${trackingUrl}&lang=${currentLanguage}`;

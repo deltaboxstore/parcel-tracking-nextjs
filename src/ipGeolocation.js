@@ -168,8 +168,7 @@ const multiLanguageCountries = {
   ],
   'GB': [
     { code: 'en', name: 'English', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-    { code: 'cy', name: 'Cymraeg (Welsh)', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' },
-    { code: 'ga', name: 'Gaeilge (Irish)', flag: '🇮🇪' }
+    { code: 'cy', name: 'Cymraeg (Welsh)', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' }
   ],
   'US': [
     { code: 'en', name: 'English', flag: '🇺🇸' },

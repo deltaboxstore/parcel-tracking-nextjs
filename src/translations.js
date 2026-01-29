@@ -98,6 +98,12 @@ export const translations = {
     form: "form",
     forEnquiries: "for any enquiries you have regarding your order.",
     // Track-your-item tracking result labels
+    anPostNoDirectTracking: "An Post (Ireland) does not support direct tracking links or embedded tracking.",
+    anPostPasteManually: "Please paste your tracking number manually on the An Post website.",
+    goToAnPost: "Go to An Post",
+    israelPostNoEmbed: "Israel Post does not support embedded tracking.",
+    israelPostUseOfficial: "Please use the official Israel Post website to track your item.",
+    goToIsraelPost: "Go to Israel Post",
     postedDate: "Posted Date:",
     status: "Status:",
     shippedVia: "Shipped Via:",
