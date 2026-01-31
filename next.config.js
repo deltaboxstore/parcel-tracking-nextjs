@@ -1,7 +1,5 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  /* config options here */
-  reactCompiler: true,
+module.exports = {
+  reactStrictMode: true,
   async redirects() {
     return [
       {
@@ -18,5 +16,3 @@ const nextConfig = {
     ];
   },
 };
-
-export default nextConfig;
