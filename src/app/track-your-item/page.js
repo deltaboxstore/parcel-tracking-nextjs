@@ -1045,7 +1045,7 @@ function App() {
             value={orderNumber} 
             onChange={(e) => setOrderNumber(e.target.value)} 
             required
-            placeholder="DLTB1234567890"
+            placeholder="RTNX1234567890"
             disabled={accessBlocked}
           />
         </div>
@@ -1191,14 +1191,15 @@ function App() {
                   View Tracking Information from Singapore SpeedPost
                 </button>
                 {fromDate && toDate && (
-                  <button
-                    type="button"
+                  <a
+                    href={`https://mydhl.express.dhl/sg/en/tracking.html#/results?shipperReference=${trackingNumber}&fromDate=${fromDate}&toDate=${toDate}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="btn-secondary"
-                    style={{ backgroundColor: '#e60000', color: '#fff' }}
-                    onClick={() => { setActiveEmbed('dhl'); scrollToEmbed(); }}
+                    style={{ backgroundColor: '#e60000', color: '#fff', }}
                   >
                     View Tracking Information from DHL Express (Shipper Reference)
-                  </button>
+                  </a>
                 )}
               </>
             )}
@@ -1206,24 +1207,25 @@ function App() {
 
           {/* Embedded tracker: mount a single iframe to avoid repeated loads */}
           <div className="tracking-embed" style={{ marginTop: '20px', overflowX: 'auto' }}>
+
             {/^\d{10}$/.test(trackingNumber) && (
-              <iframe
-                key={`dhl-${trackingNumber}-${currentLanguage}`}
-                src={`/api/proxy-dhl?trackingNumber=${encodeURIComponent(trackingNumber)}&lang=${currentLanguage}`}
-                style={{ width: '100%', minHeight: '600px', border: 'none', backgroundColor: 'white' }}
-                title="DHL Tracking"
-                sandbox="allow-same-origin allow-popups allow-forms allow-scripts"
-              />
+              <div style={{ padding: 12, background: '#fff3cd', border: '1px solid #ffeeba', borderRadius: 6 }}>
+                DHL Express does not support tracking via embed. Please{' '}
+                <a href={`https://mydhl.express.dhl/sg/en/tracking.html#/results?id=${trackingNumber}`}
+                  target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc', fontWeight: 'bold' }}>
+                  click here
+                </a>{' '}to track (opens in new tab).
+              </div>
             )}
 
             {/^PX\d{9}SG$/.test(trackingNumber) && (
-              <iframe
-                key={`speedpost-${trackingNumber}-${currentLanguage}`}
-                src={`/api/proxy-destination?url=${encodeURIComponent(`https://www.speedpost.com.sg/track-and-trace?tnt=${trackingNumber}`)}&lang=${currentLanguage}`}
-                style={{ width: '100%', minHeight: '600px', border: 'none', backgroundColor: 'white' }}
-                title="SpeedPost Tracking"
-                sandbox="allow-same-origin allow-popups allow-forms allow-scripts"
-              />
+              <div style={{ padding: 12, background: '#fff3cd', border: '1px solid #ffeeba', borderRadius: 6 }}>
+                SpeedPost Singapore does not support tracking via embed. Please{' '}
+                <a href={`https://www.speedpost.com.sg/track-and-trace?tnt=${trackingNumber}`}
+                  target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc', fontWeight: 'bold' }}>
+                  click here
+                </a>{' '}to track (opens in new tab).
+              </div>
             )}
 
             {/* Normal postal: toggle between SingPost and Destination */}
@@ -1237,16 +1239,18 @@ function App() {
                   >
                     View Tracking Information from Singapore Post
                   </button>
-                  <button
-                    className={activeEmbed === 'dest' ? 'btn-primary' : 'btn-secondary'}
-                    onClick={() => setActiveEmbed('dest')}
-                    style={{ padding: '6px 10px' }}
-                  >
-                    View Tracking Information from {operatorName}
-                  </button>
+                  {destinationCountry !== 'SG' && (
+                    <button
+                      className={activeEmbed === 'dest' ? 'btn-primary' : 'btn-secondary'}
+                      onClick={() => setActiveEmbed('dest')}
+                      style={{ padding: '6px 10px' }}
+                    >
+                      View Tracking Information from {operatorName}
+                    </button>
+                  )}
                 </div>
 
-                {activeEmbed === 'singpost' && (
+                {(activeEmbed === 'singpost' || destinationCountry === 'SG') && (
                   <iframe
                     key={`singpost-${trackingNumber}-${currentLanguage}`}
                     src={`/api/proxy-singpost?trackingid=${encodeURIComponent(trackingNumber)}&lang=${currentLanguage}`}
@@ -1282,7 +1286,7 @@ function App() {
                       // 'auspost.com.au',
                       // 'www.royalmail.com',
                       // 'www.nzpost.co.nz', 
-                      /*'jouw.postnl.nl',*/ /*'track.bpost.cloud',*/ 'www.dhl.com', /*'www.laposte.fr',*/ /*'www.postnord.se',*/
+                      /*'jouw.postnl.nl',*/ /*'track.bpost.cloud',*/ /*'www.dhl.com',*/ /*'www.laposte.fr',*/ /*'www.postnord.se',*/
                       // 'www.post.at',
                       /*'www.hongkongpost.hk',*/ 'emonitoring.poczta-polska.pl',  /*'www.correos.es',*/
                       'service.epost.go.kr', 'trackings.post.japanpost.jp',
@@ -1290,7 +1294,7 @@ function App() {
                       /*'bn.postglobal.online',*/ 'www.posindonesia.co.id', /*'israelpost.co.il',*/, /*'www.poste.it',*/
                       /*'www.ctt.gov.mo',*/ /*'www.pos.com.my'*/, /*'sporing.posten.no',*/ /*'tracking.phlpost.gov.ph',*/
                     /*'postserv.post.gov.tw',*/ /*'track.thailandpost.com',*/ /*'vnpost.vn',*/ /*'www.ems.com.cn',*/
-                      /*'www.posti.fi'*/, 'www.postaonline.cz', 
+                      /*'www.posti.fi'*/, 'www.postaonline.cz', /*'www.speedpost.com.sg'*/
                     ];
                     if (allowed.includes(u.hostname)) {
                       const proxyUrl = (destinationCountry === 'CA' || destinationCountry === 'DE' || destinationCountry === 'GB')
