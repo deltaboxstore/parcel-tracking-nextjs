@@ -1134,10 +1134,10 @@ function App() {
             <p><strong>{formatLabel('shippedVia')}</strong> {shippedVia}</p>
             
             {/* Show epac service name if it's ePAC */}
-            {shippedVia === "SingPost ePAC (aka SpeedPost Saver International)" && epacKnownAs && (
+            {shippedVia === "SingPost ePAC (aka SpeedPost Saver International)" && (
               <p style={{ marginTop: '10px', padding: '10px', backgroundColor: '#e8f4f8', borderRadius: '5px' }}>
                 {t('thisServiceKnownAs')}{" "}
-                <strong>{epacKnownAs}</strong> {t('in')}{" "}
+                <strong>{epacKnownAs || getEpacName(destinationCountry, t)}</strong> {t('in')}{" "}
                 {getCountryName(destinationCountry)}.
               </p>
             )}
