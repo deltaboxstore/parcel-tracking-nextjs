@@ -648,6 +648,63 @@ function App() {
     return /[:：]\s*$/.test(base) ? base : `${base}:`;
   }, [t]);
 
+  // Translate status values
+  const translateStatus = useCallback((statusText) => {
+    if (!statusText) return statusText;
+    const statusMap = {
+      'In Preparation': 'statusInPreparation',
+      'In Transit': 'statusInTransit',
+      'Delivered': 'statusDelivered',
+      'Out for Delivery': 'statusOutForDelivery',
+      'Arrived': 'statusArrived',
+      'Processing': 'statusProcessing',
+      'Dispatched': 'statusDispatched',
+      'Returned': 'statusReturned',
+      'Failed': 'statusFailed',
+      'Cancelled': 'statusCancelled',
+      'Held by Customs': 'statusHeldByCustoms',
+      'Awaiting Collection': 'statusAwaitingCollection'
+    };
+    const key = statusMap[statusText];
+    return key ? t(key) : statusText;
+  }, [t]);
+
+  // Format date according to language
+  const formatDate = useCallback((dateStr) => {
+    if (!dateStr) return dateStr;
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return dateStr;
+      
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      if (currentLanguage === 'zh' || currentLanguage === 'zh_hk') {
+        // Chinese format: 2026年1月27日
+        return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+      } else if (currentLanguage === 'ja') {
+        // Japanese format: 2026年1月27日
+        return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+      } else if (currentLanguage === 'ko') {
+        // Korean format: 2026년 1월 27일
+        return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+      } else {
+        // Use locale-specific format for other languages
+        return date.toLocaleDateString(currentLanguage === 'en' ? 'en-US' : currentLanguage, options);
+      }
+    } catch (error) {
+      return dateStr;
+    }
+  }, [currentLanguage]);
+
+  // Translate "aka" in service names
+  const translateServiceName = useCallback((serviceName) => {
+    if (!serviceName) return serviceName;
+    if (serviceName.includes('aka')) {
+      const akaTranslation = t('aka') || 'aka';
+      return serviceName.replace(/\(aka\s/i, `(${akaTranslation} `);
+    }
+    return serviceName;
+  }, [t]);
+
   const scrollToEmbed = useCallback(() => {
     const el = document.querySelector('.tracking-embed');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1135,11 +1192,11 @@ function App() {
           <div className="tracking-details">
             <p><strong>{formatLabel('trackingNumber')}</strong> {trackingNumber}</p>
             {postcode && <p><strong>{formatLabel('postcode')}</strong> {postcode}</p>}
-            <p><strong>{formatLabel('destinationCountry')}</strong> {destinationCountry}</p>
+            <p><strong>{formatLabel('destinationCountry')}</strong> {getCountryName(destinationCountry)}</p>
             <p><strong>{formatLabelNoExample('orderNumber')}</strong> {orderNumber}</p>
-            <p><strong>{formatLabel('postedDate')}</strong> {postedDate}</p>
-            <p><strong>{formatLabel('status')}</strong> {status}</p>
-            <p><strong>{formatLabel('shippedVia')}</strong> {shippedVia}</p>
+            <p><strong>{formatLabel('postedDate')}</strong> {formatDate(postedDate)}</p>
+            <p><strong>{formatLabel('status')}</strong> {translateStatus(status)}</p>
+            <p><strong>{formatLabel('shippedVia')}</strong> {translateServiceName(shippedVia)}</p>
             
             {/* Show epac service name if it's ePAC */}
             {shippedVia === "SingPost ePAC (aka SpeedPost Saver International)" && (
