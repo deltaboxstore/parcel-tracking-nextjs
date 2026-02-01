@@ -427,8 +427,8 @@ function App() {
     if (!countryCode) return "";
     const translationKey = `country${countryCode}`;
     const translated = t(translationKey);
-    // Remove flag emoji (2 characters) and space if present
-    return translated.replace(/^[\uD800-\uDBFF][\uDC00-\uDFFF]\s*/, '');
+    // Remove flag emoji (regional indicator pairs) and any following space
+    return translated.replace(/[\u{1F1E6}-\u{1F1FF}]+\s*/gu, '').trim();
   };
 
   const [trackingNumber, setTrackingNumber] = useState("");
@@ -1022,7 +1022,7 @@ function App() {
             value={orderNumber} 
             onChange={(e) => setOrderNumber(e.target.value)} 
             required
-            placeholder="RTNX1234567890 or DLTB3958994670"
+            placeholder="RTNX1234567890"
             disabled={accessBlocked}
           />
         </div>

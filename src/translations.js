@@ -6,7 +6,7 @@ export const translations = {
     // Tracking
     parcelTracking: "Parcel Tracking", serviceAnnouncement: "Service Announcement", trackingNumber: "Tracking Number", destinationCountry: "Destination Country",
     usaStormAdvisory: "Severe winter storm is affecting several parts of USA. This will affect both postal and express delivery for packages into USA.",
-    postcode: "Postcode", orderNumber: "Order Number (Example: RTNX1234567890 or DLTB3958994670)",
+    postcode: "Postcode", orderNumber: "Order Number (Example: RTNX1234567890)",
     fromDate: "From Date (REQUIRED for DHL verification)", toDate: "To Date (REQUIRED for DHL verification)",
     trackParcel: "Track Parcel", selectCourier: "-- Select Courier / Country --",
     singaporeCouriers: "Singapore Couriers", topCountries: "Top 5 Countries", otherCountries: "Other Countries",
@@ -229,7 +229,7 @@ export const translations = {
     home: "Startseite", blog: "Blog", aboutUs: "Über Uns", faq: "FAQ", contact: "Kontakt", trackPackage: "Paket Verfolgen",
     parcelTracking: "Paketverfolgung", serviceAnnouncement: "Dienstankündigung", trackingNumber: "Tracking-Nummer", destinationCountry: "Zielland", postcode: "Postleitzahl",
     usaStormAdvisory: "Schwerer Wintersturm betrifft mehrere Teile der USA. Dies beeinträchtigt sowohl Post- als auch Expresszustellung für Sendungen in die USA.",
-    orderNumber: "Bestellnummer (Beispiel: RTNX1234567890 oder DLTB3958994670)", fromDate: "Von Datum (ERFORDERLICH)", toDate: "Bis Datum (ERFORDERLICH)",
+    orderNumber: "Bestellnummer (Beispiel: RTNX1234567890)", fromDate: "Von Datum (ERFORDERLICH)", toDate: "Bis Datum (ERFORDERLICH)",
     trackParcel: "Paket Verfolgen", selectCourier: "-- Kurier / Land Wählen --", singaporeCouriers: "Singapurer Kurierdienste",
     topCountries: "Top 5 Länder", otherCountries: "Andere Länder", note: "HINWEIS", disclaimer: "HAFTUNGSAUSSCHLUSS",
     importantInformation: "Wichtige Informationen:", didNotReceiveEmail: "Wenn Sie Ihre Bestätigungs-E-Mail von Etsy, eBay, Shopee oder Payhip nicht erhalten haben, scrollen Sie nach unten, um Ihre Bestellung über Ihre E-Mail-Adresse oder Telefonnummer zu suchen, die mit dieser Bestellung verknüpft ist.",
@@ -341,7 +341,7 @@ export const translations = {
     viewTrackingSingPost: "Sendungsverfolgung von Singapore Post anzeigen",
     viewTrackingDestPost: "Sendungsverfolgung von",
     post: "Post",
-    orderNumberExample: "Bestellnummer (beginnt mit RTNX oder DLTB - Beispiel: RTNX1234567890 oder DLTB3958994670):",
+    orderNumberExample: "Bestellnummer (beginnt mit RTNX oder DLTB - Beispiel: RTNX1234567890):",
     deliveryRecordNote: "Bitte beachten Sie, dass nach der Zustellung der Artikel der Datensatz nur bis zu 7 Tage gespeichert und dann gelöscht wird.",
     copyrightAllRights: "Alle Rechte vorbehalten.",
     // Access restriction messages
@@ -431,7 +431,7 @@ export const translations = {
   fr: {
     home: "Accueil", blog: "Blog", aboutUs: "À Propos", faq: "FAQ", contact: "Contact", trackPackage: "Suivi de Colis",
     parcelTracking: "Suivi de Colis", usaStormAdvisory: "Une forte tempête hivernale touche plusieurs régions des États‑Unis. Cela affectera la distribution postale et express des colis vers les États‑Unis.", serviceAnnouncement: "Annonce de Service", trackingNumber: "Numéro de Suivi", destinationCountry: "Pays de Destination", postcode: "Code Postal",
-    orderNumber: "Numéro de Commande (Exemple: RTNX1234567890 ou DLTB3958994670)", fromDate: "De la Date (REQUIS)", toDate: "À la Date (REQUIS)",
+    orderNumber: "Numéro de Commande (Exemple: RTNX1234567890)", fromDate: "De la Date (REQUIS)", toDate: "À la Date (REQUIS)",
     trackParcel: "Suivre le Colis", selectCourier: "-- Sélectionner Coursier / Pays --", singaporeCouriers: "Coursiers Singapouriens",
     topCountries: "Top 5 Pays", otherCountries: "Autres Pays", note: "REMARQUE", disclaimer: "AVERTISSEMENT",
     importantInformation: "Informations Importantes:", didNotReceiveEmail: "Si vous n'avez pas reçu votre e-mail de confirmation d'Etsy, eBay, Shopee ou Payhip, faites défiler vers le bas pour rechercher votre commande via votre adresse e-mail ou votre numéro de téléphone associé à cette commande.",
@@ -538,7 +538,7 @@ export const translations = {
     viewTrackingSingPost: "Voir les informations de suivi de Singapore Post",
     viewTrackingDestPost: "Voir les informations de suivi de",
     post: "Poste",
-    orderNumberExample: "Numéro de Commande (commence par RTNX ou DLTB - exemple: RTNX1234567890 ou DLTB3958994670):",
+    orderNumberExample: "Numéro de Commande (commence par RTNX ou DLTB - exemple: RTNX1234567890):",
     deliveryRecordNote: "Veuillez noter qu'une fois l'article livré, l'enregistrement ne sera conservé que pendant 7 jours, puis sera supprimé.",
     copyrightAllRights: "Tous droits réservés.",
     // Access restriction messages
@@ -628,7 +628,7 @@ export const translations = {
   es: {
     home: "Inicio", blog: "Blog", aboutUs: "Acerca De", faq: "Preguntas Frecuentes", contact: "Contacto", trackPackage: "Rastrear Paquete",
     parcelTracking: "Rastreo de Paquetes", usaStormAdvisory: "Una fuerte tormenta invernal afecta a varias partes de EE. UU. Esto afectará la entrega postal y exprés de paquetes hacia EE. UU.", serviceAnnouncement: "Anuncio de Servicio", trackingNumber: "Número de Rastreo", destinationCountry: "País de Destino", postcode: "Código Postal",
-    orderNumber: "Número de Pedido (Ejemplo: RTNX1234567890 o DLTB3958994670)", fromDate: "Desde Fecha (REQUERIDO)", toDate: "Hasta Fecha (REQUERIDO)",
+    orderNumber: "Número de Pedido (Ejemplo: RTNX1234567890)", fromDate: "Desde Fecha (REQUERIDO)", toDate: "Hasta Fecha (REQUERIDO)",
     trackParcel: "Rastrear Paquete", selectCourier: "-- Seleccionar Mensajería / País --", singaporeCouriers: "Mensajerías de Singapur",
     topCountries: "Top 5 Países", otherCountries: "Otros Países", note: "NOTA", disclaimer: "DESCARGO DE RESPONSABILIDAD",
     importantInformation: "Información Importante:", didNotReceiveEmail: "Si no recibió su correo electrónico de confirmación de Etsy, eBay, Shopee o Payhip, desplácese hacia abajo para buscar su pedido a través de su dirección de correo electrónico o número de teléfono vinculado a este pedido.",
@@ -735,7 +735,7 @@ export const translations = {
     viewTrackingSingPost: "Ver información de seguimiento de Singapore Post",
     viewTrackingDestPost: "Ver información de seguimiento de",
     post: "Correos",
-    orderNumberExample: "Número de Pedido (comienza con RTNX o DLTB - ejemplo: RTNX1234567890 o DLTB3958994670):",
+    orderNumberExample: "Número de Pedido (comienza con RTNX o DLTB - ejemplo: RTNX1234567890):",
     deliveryRecordNote: "Tenga en cuenta que una vez que el artículo ha sido entregado, el registro solo se almacenará hasta 7 días y será eliminado.",
     copyrightAllRights: "Todos los derechos reservados.",
     // Access restriction messages
@@ -825,7 +825,7 @@ export const translations = {
   ja: {
     home: "ホーム", blog: "ブログ", aboutUs: "について", faq: "よくある質問", contact: "お問い合わせ", trackPackage: "小包を追跡する",
     parcelTracking: "小包追跡", usaStormAdvisory: "米国の複数地域で厳しい冬の嵐が発生しています。米国向けの郵便および速達の配達に影響します。", serviceAnnouncement: "サービス発表", trackingNumber: "追跡番号", destinationCountry: "配送先国", postcode: "郵便番号",
-    orderNumber: "注文番号（例：RTNX1234567890 または DLTB3958994670）", fromDate: "開始日（必須）", toDate: "終了日（必須）",
+    orderNumber: "注文番号（例：RTNX1234567890）", fromDate: "開始日（必須）", toDate: "終了日（必須）",
     trackParcel: "小包を追跡", selectCourier: "-- 配送業者/国を選択 --", singaporeCouriers: "シンガポール配送業者",
     topCountries: "トップ5国", otherCountries: "その他の国", note: "注", disclaimer: "免責事項",
     importantInformation: "重要な情報:", didNotReceiveEmail: "Etsy、eBay、Shopee、またはPayhipからの確認メールが届いていない場合は、下にスクロールして、この注文にリンクされているメールアドレスまたは電話番号で注文を検索してください。",
@@ -932,7 +932,7 @@ export const translations = {
     viewTrackingSingPost: "Singapore Postの追跡情報を表示",
     viewTrackingDestPost: "追跡情報を表示：",
     post: "郵便",
-    orderNumberExample: "注文番号（RTNXまたはDLTBで始まる - 例：RTNX1234567890 または DLTB3958994670）:",
+    orderNumberExample: "注文番号（RTNXまたはDLTBで始まる - 例：RTNX1234567890）:",
     deliveryRecordNote: "商品が配達されると、記録は7日間のみ保存され、その後削除されることにご注意ください。",
     copyrightAllRights: "無断転載禁止。",
     epacUS: "ファーストクラス国際小包サービス",
@@ -1017,7 +1017,7 @@ export const translations = {
   zh: {
     home: "首页", blog: "博客", aboutUs: "关于我们", faq: "常见问题", contact: "联系我们", trackPackage: "追踪包裹",
     parcelTracking: "包裹追踪", usaStormAdvisory: "严重的冬季风暴正影响美国多个地区。这将影响寄往美国的包裹的邮政和快递投递。", serviceAnnouncement: "服务公告", trackingNumber: "追踪号码", destinationCountry: "目标国家", postcode: "邮政编码",
-    orderNumber: "订单号（示例：RTNX1234567890 或 DLTB3958994670）", fromDate: "从日期（必需）", toDate: "至日期（必需）",
+    orderNumber: "订单号（示例：RTNX1234567890）", fromDate: "从日期（必需）", toDate: "至日期（必需）",
     trackParcel: "追踪包裹", selectCourier: "-- 选择快递/国家 --", optionSingPost: "🇸🇬 新加坡邮政 (SingPost)", singaporeCouriers: "新加坡快递商",
     topCountries: "前5个国家", otherCountries: "其他国家", note: "注意", disclaimer: "免责声明",
     importantInformation: "重要信息:", didNotReceiveEmail: "如果您没有收到来自Etsy、eBay、Shopee或Payhip的确认电子邮件，请向下滚动，通过与此订单关联的电子邮件地址或电话号码搜索您的订单。",
@@ -1124,7 +1124,7 @@ export const translations = {
     viewTrackingSingPost: "查看Singapore Post的追踪信息",
     viewTrackingDestPost: "查看追踪信息：",
     post: "邮政",
-    orderNumberExample: "订单编号（以RTNX或DLTB开头 - 示例：RTNX1234567890 或 DLTB3958994670）:",
+    orderNumberExample: "订单编号（以RTNX或DLTB开头 - 示例：RTNX1234567890）:",
     deliveryRecordNote: "请注意，物品投递后，记录仅保存 7 天，之后将被删除。",
     copyrightAllRights: "版权所有。",
     countryAF: "阿富汗",
@@ -1450,7 +1450,7 @@ export const translations = {
   "zh-hant": {
     home: "首頁", blog: "博客", aboutUs: "關於我們", faq: "常見問題", contact: "聯絡我們", trackPackage: "追蹤包裹",
     parcelTracking: "包裹追蹤", usaStormAdvisory: "嚴重的冬季風暴正影響美國多個地區。這將影響寄往美國的包裹之郵政與快遞配送。", serviceAnnouncement: "服務公告", trackingNumber: "追蹤號碼", destinationCountry: "目標國家", postcode: "郵政編碼",
-    orderNumber: "訂單號（示例：RTNX1234567890 或 DLTB3958994670）", fromDate: "從日期（必需）", toDate: "至日期（必需）",
+    orderNumber: "訂單號（示例：RTNX1234567890）", fromDate: "從日期（必需）", toDate: "至日期（必需）",
     trackParcel: "追蹤包裹", selectCourier: "-- 選擇快遞/國家 --", optionSingPost: "🇸🇬 新加坡郵政 (SingPost)", singaporeCouriers: "新加坡快遞商",
     topCountries: "前5個國家", otherCountries: "其他國家", note: "注意", disclaimer: "免責聲明",
     importantInformation: "重要信息:", didNotReceiveEmail: "如果您沒有收到來自Etsy、eBay、Shopee或Payhip的確認電子郵件，請向下滾動，通過與此訂單關聯的電子郵件地址或電話號碼搜索您的訂單。",
@@ -1557,7 +1557,7 @@ export const translations = {
     viewTrackingSingPost: "查看Singapore Post的追蹤信息",
     viewTrackingDestPost: "查看追蹤信息：",
     post: "郵政",
-    orderNumberExample: "訂單編號（以RTNX或DLTB開頭 - 示例：RTNX1234567890 或 DLTB3958994670）:",
+    orderNumberExample: "訂單編號（以RTNX或DLTB開頭 - 示例：RTNX1234567890）:",
     deliveryRecordNote: "請注意，物品投遞後，記錄僅保存 7 天，之後將被刪除。",
     copyrightAllRights: "版權所有。",
     // Service Announcement UI
