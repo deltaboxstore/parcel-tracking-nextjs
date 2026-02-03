@@ -93,6 +93,68 @@ export async function GET(request) {
       
       let rowsRemoved = 0;
       
+      // Rename headers and center-align
+      $('th.sgp-rate-table__main-head').each(function() {
+        const $th = $(this);
+        const headerText = $th.text().trim();
+        
+        // Center-align all header cells with !important
+        $th.attr('style', 'text-align: center !important;');
+        
+        if (headerText === 'Mail') {
+          $th.text('SpeedPost Saver (ePAC)');
+          console.log('Renamed "Mail" to "SpeedPost Saver (ePAC)"');
+        } else if (headerText === 'Speedpost Priority') {
+          $th.text('SpeedPost Priority (EMS)');
+          console.log('Renamed "Speedpost Priority" to "SpeedPost Priority (EMS)"');
+        } else if (headerText === 'Speedpost Express') {
+          $th.text('SpeedPost Express (last-mile DHL Express)');
+          console.log('Renamed "Speedpost Express" to "SpeedPost Express (last-mile DHL Express)"');
+        }
+      });
+      
+      // Center-align all body cells in the rate table
+      $('.sgp-rate-table__row-list table tbody td').each(function() {
+        $(this).css('text-align', 'center');
+      });
+      
+      // Ensure tables use full width and auto layout
+      $('.sgp-rate-table__row-list table').css('width', '100%');
+      
+      // Remove the Speedpost Economy header
+      $('th.sgp-rate-table__main-head').each(function() {
+        const $th = $(this);
+        const headerText = $th.text().trim();
+        
+        if (headerText === 'Speedpost Economy') {
+          $th.remove();
+          console.log('Removed "Speedpost Economy" header');
+        }
+      });
+      
+      // Remove column 6 (index 5) from all rate tables
+      $('.sgp-rate-table__row-list').each(function() {
+        const $table = $(this);
+        
+        // Remove 6th column from all header rows
+        $table.find('thead tr').each(function() {
+          $(this).find('th').eq(5).remove();
+        });
+        
+        // Remove 6th column from all body rows
+        $table.find('tbody tr').each(function() {
+          $(this).find('td').eq(5).remove();
+        });
+        
+        console.log('Removed column 6 (index 5) from rate table');
+      });
+      
+      // Fix colspan attributes - change colspan="6" to colspan="5"
+      $('td[colspan="6"]').each(function() {
+        $(this).attr('colspan', '5');
+        console.log('Updated colspan from 6 to 5');
+      });
+      
       // Target the rate table with class sgp-rate-table__row-list
       $('.sgp-rate-table__row-list tbody tr').each(function() {
         const $row = $(this);
@@ -109,6 +171,18 @@ export async function GET(request) {
             console.log(`Removing table row for: ${countryName} (${countryCode})`);
             $row.remove();
             rowsRemoved++;
+          }
+          
+          // Change "Limited to documents only" to "Available" for United States rows
+          if (countryCode === 'US' || countryName.toLowerCase().includes('united states')) {
+            cells.each(function() {
+              const $cell = $(this);
+              const cellText = $cell.text().trim();
+              if (cellText.toLowerCase().includes('limited to documents only')) {
+                $cell.text('Available');
+                console.log(`Changed "Limited to documents only" to "Available" for ${countryName}`);
+              }
+            });
           }
         }
       });
